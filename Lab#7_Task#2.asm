@@ -1,0 +1,67 @@
+.MODEL SMALL
+.STACK 100H
+.DATA
+    NUM1 DW 19
+    NUM2 DW 9
+    MSG1 DB 'Value of NUM1 is: $'
+    MSG2 DB 'Value of NUM2 is: $'
+    NEWLINE DB 0DH, 0AH, '$'
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+   
+    MOV AX, NUM1
+    PUSH AX
+    MOV AX, NUM2
+    PUSH AX
+
+   
+    POP AX
+    MOV NUM1, AX
+    POP AX
+    MOV NUM2, AX
+
+   
+    LEA DX, MSG1
+    MOV AH, 09H
+    INT 21H
+    MOV AX, NUM1
+    CALL DISPLAY_NUMBER
+    LEA DX, NEWLINE
+    MOV AH, 09H
+    INT 21H
+
+   
+    LEA DX, MSG2
+    MOV AH, 09H
+    INT 21H
+    MOV AX, NUM2
+    CALL DISPLAY_NUMBER
+    LEA DX, NEWLINE
+    MOV AH, 09H
+    INT 21H
+
+    MOV AH, 4CH
+    INT 21H
+MAIN ENDP
+
+DISPLAY_NUMBER PROC
+    MOV BX, 10
+    MOV CX, 0
+CONVERT_LOOP:
+    MOV DX, 0
+    DIV BX
+    ADD DL, '0'
+    PUSH DX
+    INC CX
+    CMP AX, 0
+    JNE CONVERT_LOOP
+DISPLAY_LOOP:
+    POP DX
+    MOV AH, 02H
+    INT 21H
+    LOOP DISPLAY_LOOP
+    RET
+DISPLAY_NUMBER ENDP
+END MAIN
